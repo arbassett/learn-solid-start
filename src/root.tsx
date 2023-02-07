@@ -15,6 +15,8 @@ import {
 
 import 'virtual:uno.css';
 import '@unocss/reset/tailwind.css';
+import './assets/main.css'
+import { AppContextProvider } from "./context";
 
 export default function Root() {
   return (
@@ -28,7 +30,9 @@ export default function Root() {
           <Suspense>
             <ErrorBoundary>
               <Routes>
-                <FileRoutes />
+                <AppContextProvider>
+                  <FileRoutes />
+                </AppContextProvider>
               </Routes>
             </ErrorBoundary>
           </Suspense>
