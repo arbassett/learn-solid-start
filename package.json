@@ -2,11 +2,36 @@
   "name": "learn-solid-start",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "solid-start build",
+    "start": "solid-start start",
+    "dev": "solid-start dev",
+    "lint": "eslint --fix \"**/*.{ts,tsx,js,jsx}\""
   },
+  "type": "module",
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@solidjs/meta": "^0.28.2",
+    "@solidjs/router": "^0.7.0",
+    "@unocss/preset-wind": "^0.49.4",
+    "@unocss/reset": "^0.49.4",
+    "eslint-plugin-solid": "^0.9.4",
+    "prettier-plugin-tailwindcss": "^0.2.2",
+    "solid-js": "^1.6.10",
+    "solid-start": "^0.2.20",
+    "undici": "^5.15.1",
+    "unocss": "^0.49.4"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.33.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.3",
+    "solid-start-node": "^0.2.20",
+    "typescript": "^4.9.4",
+    "vite": "^3.2.5"
+  }
 }
