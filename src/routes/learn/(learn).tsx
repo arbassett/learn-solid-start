@@ -1,4 +1,5 @@
 import type { WebContainer } from '@webcontainer/api';
+import onigasm from 'onigasm/lib/onigasm.wasm?url';
 import { Suspense, type VoidComponent, onMount, onCleanup, createSignal, createEffect } from 'solid-js';
 import { A, Head, Title, Meta, Link, useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
@@ -7,6 +8,9 @@ import { createWebContainer } from '~/lib/webcontainer';
 import logo from '~/assets/logo.svg?url';
 import { Transition } from 'solid-transition-group';
 import { Editor } from '~/components/Editor';
+import { isServer } from 'solid-js/web';
+import { GridResizer } from '~/components/GridResizer';
+import { createMediaQuery } from '@solid-primitives/media'
 
 export function routeData() {
   return createServerData$(() => {
@@ -56,6 +60,23 @@ const run = async (vm: WebContainer, command: string, args: string[]) => {
   await process.exit;
 };
 
+if(!isServer){
+window.MonacoEnvironment = {
+  // getWorker(_moduleId: unknown, label: string) {
+  //   switch (label) {
+  //     case 'css':
+  //       return new cssWorker();
+  //     case 'typescript':
+  //     case 'javascript':
+  //       return new tsWorker();
+  //     default:
+  //       return new editorWorker();
+  //   }
+  // },
+  onigasm,
+};
+}
+
 const LearnPage: VoidComponent = () => {
   const vm: WebContainer | null = null;
 
@@ -63,41 +84,47 @@ const LearnPage: VoidComponent = () => {
   const state = createWebContainer({ initalfileSystem: data() });
   console.log('data', data && data());
 
-  const [iframeSource, setIframeSource] = createSignal<string | null>(null);
+  const clampPercentage = (percentage: number, lowerBound: number, upperBound: number) => {
+    return Math.min(Math.max(percentage, lowerBound), upperBound);
+  };
 
-  // onMount(async () => {
-  //   if (vm) vm.teardown();
-  //   vm = await WebContainer.boot();
-  //   console.log('vm', vm   );
-  //   vm.on('server-ready', (_port, base) => {
-  //     console.log('Server is ready');
-  //     setIframeSource(base);
-  //   });
+  let grid!: HTMLDivElement;
+  let resizer!: HTMLDivElement;
+  const [left, setLeft] = createSignal(1.25);
 
-  //   await vm.mount(data());
-  //   // await run(vm, 'cd', ['--help']);
-  //   await run(vm, 'turbo', ['install']);
-  //   await run(vm, 'turbo', ['run','dev']);
-  //   // await run(vm,'turbo', ['create', 'solid', '--example', 'bare'])
-  // });
+  const isLarge = createMediaQuery('(min-width: 768px)');
+  const isHorizontal = () => !isLarge();
 
-  // onCleanup(() => {
-  //   vm && vm.teardown();
-  // });
+  const changeLeft = (clientX: number, clientY: number) => {
+    let position: number;
+    let size: number;
 
-  // createEffect(() => {
-  //   data && console.log('data', data());
-  // })
+    const rect = grid.getBoundingClientRect();
+
+    if (isHorizontal()) {
+      position = clientY - rect.top - resizer.offsetHeight / 2;
+      size = grid.offsetHeight - resizer.offsetHeight;
+    } else {
+      position = clientX - rect.left - resizer.offsetWidth / 2;
+      size = grid.offsetWidth - resizer.offsetWidth;
+    }
+    const percentage = position / size;
+    const percentageAdjusted = clampPercentage(percentage * 2, 0.5, 1.5);
+
+    setLeft(percentageAdjusted);
+  };
 
   return (
     <div
+    ref={grid}
       class="dark:bg-solid-darkbg wrapper dark grid h-full min-h-0 bg-white font-sans text-black dark:text-white"
       style={{
-        '--left': `${1.25}fr`,
-        '--right': `${2 - 1.25}fr`,
+        '--left': `${left()}fr`,
+        '--right': `${2 - left()}fr`,
       }}
     >
-      <Editor />
+      <Editor files={data()}/>
+      <GridResizer ref={resizer} isHorizontal={false} onResize={changeLeft} />
       <div class="relative">
         <iframe src={state().vm?.base ?? ''} class="dark:bg-other block h-full w-full overflow-auto bg-white p-0" />
 

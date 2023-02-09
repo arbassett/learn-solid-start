@@ -9,6 +9,7 @@
     "jsxImportSource": "solid-js",
     "jsx": "preserve",
     "types": ["solid-start/env"],
+    "resolveJsonModule": true,
     "baseUrl": "./",
     "paths": {
       "~/*": ["./src/*"]
