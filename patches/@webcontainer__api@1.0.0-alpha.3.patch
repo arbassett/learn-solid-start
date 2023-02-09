@@ -1,0 +1,393 @@
+diff --git a/dist/index.js b/dist/index.js
+index a7539752f02e7cdf3b006384ddfb42b14bdc8291..dbc7ce40668b7f75f23d77dfd38f6d11fbea6c95 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -3,7 +3,8 @@ var proxyMarker = Symbol("Comlink.proxy");
+ var createEndpoint = Symbol("Comlink.endpoint");
+ var releaseProxy = Symbol("Comlink.releaseProxy");
+ var throwMarker = Symbol("Comlink.thrown");
+-var isObject = (val) => typeof val === "object" && val !== null || typeof val === "function";
++var isObject = (val) =>
++  (typeof val === "object" && val !== null) || typeof val === "function";
+ var proxyTransferHandler = {
+   canHandle: (val) => isObject(val) && Boolean(val[proxyMarker]),
+   serialize(obj) {
+@@ -15,7 +16,7 @@ var proxyTransferHandler = {
+   deserialize(port) {
+     port.start();
+     return wrap(port);
+-  }
++  },
+ };
+ var throwTransferHandler = {
+   canHandle: (value) => isObject(value) && throwMarker in value,
+@@ -27,8 +28,8 @@ var throwTransferHandler = {
+         value: {
+           message: value.message,
+           name: value.name,
+-          stack: value.stack
+-        }
++          stack: value.stack,
++        },
+       };
+     } else {
+       serialized = { isError: false, value };
+@@ -37,14 +38,17 @@ var throwTransferHandler = {
+   },
+   deserialize(serialized) {
+     if (serialized.isError) {
+-      throw Object.assign(new Error(serialized.value.message), serialized.value);
++      throw Object.assign(
++        new Error(serialized.value.message),
++        serialized.value
++      );
+     }
+     throw serialized.value;
+-  }
++  },
+ };
+ var transferHandlers = /* @__PURE__ */ new Map([
+   ["proxy", proxyTransferHandler],
+-  ["throw", throwTransferHandler]
++  ["throw", throwTransferHandler],
+ ]);
+ function expose(obj, ep = self, options) {
+   ep.addEventListener("message", function callback(ev) {
+@@ -55,7 +59,9 @@ function expose(obj, ep = self, options) {
+     const argumentList = (ev.data.argumentList || []).map(fromWireValue);
+     let returnValue;
+     try {
+-      const unrestricted = (options === null || options === void 0 ? void 0 : options.spec) == null;
++      const unrestricted =
++        (options === null || options === void 0 ? void 0 : options.spec) ==
++        null;
+       let parent = obj;
+       let rawValue = obj;
+       let spec = options === null || options === void 0 ? void 0 : options.spec;
+@@ -85,8 +91,14 @@ function expose(obj, ep = self, options) {
+         case 1:
+           {
+             returnValue = false;
+-            const set = (options === null || options === void 0 ? void 0 : options.set) !== false;
+-            const allowed = unrestricted || parentSpec === "primitive" || spec === "primitive";
++            const set =
++              (options === null || options === void 0
++                ? void 0
++                : options.set) !== false;
++            const allowed =
++              unrestricted ||
++              parentSpec === "primitive" ||
++              spec === "primitive";
+             if (!allowed) {
+               parent = void 0;
+             }
+@@ -129,16 +141,21 @@ function expose(obj, ep = self, options) {
+     } catch (value) {
+       returnValue = { value, [throwMarker]: 0 };
+     }
+-    Promise.resolve(returnValue).catch((value) => {
+-      return { value, [throwMarker]: 0 };
+-    }).then((returnValue2) => {
+-      const [wireValue, transferables] = toWireValue(returnValue2);
+-      ep.postMessage(Object.assign(Object.assign({}, wireValue), { id }), transferables);
+-      if (type === 5) {
+-        ep.removeEventListener("message", callback);
+-        closeEndPoint(ep);
+-      }
+-    });
++    Promise.resolve(returnValue)
++      .catch((value) => {
++        return { value, [throwMarker]: 0 };
++      })
++      .then((returnValue2) => {
++        const [wireValue, transferables] = toWireValue(returnValue2);
++        ep.postMessage(
++          Object.assign(Object.assign({}, wireValue), { id }),
++          transferables
++        );
++        if (type === 5) {
++          ep.removeEventListener("message", callback);
++          closeEndPoint(ep);
++        }
++      });
+   });
+   if (ep.start) {
+     ep.start();
+@@ -148,8 +165,7 @@ function isMessagePort(endpoint) {
+   return endpoint.constructor.name === "MessagePort";
+ }
+ function closeEndPoint(endpoint) {
+-  if (isMessagePort(endpoint))
+-    endpoint.close();
++  if (isMessagePort(endpoint)) endpoint.close();
+ }
+ function wrap(ep, target) {
+   return createProxy(ep, [], target);
+@@ -159,8 +175,7 @@ function throwIfProxyReleased(isReleased) {
+     throw new Error("Proxy has been released and is not useable");
+   }
+ }
+-function createProxy(ep, path = [], target = function() {
+-}) {
++function createProxy(ep, path = [], target = function () {}) {
+   let isProxyReleased = false;
+   const proxy2 = new Proxy(target, {
+     get(_target, prop) {
+@@ -169,7 +184,7 @@ function createProxy(ep, path = [], target = function() {
+         return () => {
+           return requestResponseMessage(ep, {
+             type: 5,
+-            path: path.map((p) => p.toString())
++            path: path.map((p) => p.toString()),
+           }).then(() => {
+             closeEndPoint(ep);
+             isProxyReleased = true;
+@@ -182,7 +197,7 @@ function createProxy(ep, path = [], target = function() {
+         }
+         const r = requestResponseMessage(ep, {
+           type: 0,
+-          path: path.map((p) => p.toString())
++          path: path.map((p) => p.toString()),
+         }).then(fromWireValue);
+         return r.then.bind(r);
+       }
+@@ -191,39 +206,51 @@ function createProxy(ep, path = [], target = function() {
+     set(_target, prop, rawValue) {
+       throwIfProxyReleased(isProxyReleased);
+       const [value, transferables] = toWireValue(rawValue);
+-      return requestResponseMessage(ep, {
+-        type: 1,
+-        path: [...path, prop].map((p) => p.toString()),
+-        value
+-      }, transferables).then(fromWireValue);
++      return requestResponseMessage(
++        ep,
++        {
++          type: 1,
++          path: [...path, prop].map((p) => p.toString()),
++          value,
++        },
++        transferables
++      ).then(fromWireValue);
+     },
+     apply(_target, _thisArg, rawArgumentList) {
+       throwIfProxyReleased(isProxyReleased);
+       const last = path[path.length - 1];
+       if (last === createEndpoint) {
+         return requestResponseMessage(ep, {
+-          type: 4
++          type: 4,
+         }).then(fromWireValue);
+       }
+       if (last === "bind") {
+         return createProxy(ep, path.slice(0, -1));
+       }
+       const [argumentList, transferables] = processArguments(rawArgumentList);
+-      return requestResponseMessage(ep, {
+-        type: 2,
+-        path: path.map((p) => p.toString()),
+-        argumentList
+-      }, transferables).then(fromWireValue);
++      return requestResponseMessage(
++        ep,
++        {
++          type: 2,
++          path: path.map((p) => p.toString()),
++          argumentList,
++        },
++        transferables
++      ).then(fromWireValue);
+     },
+     construct(_target, rawArgumentList) {
+       throwIfProxyReleased(isProxyReleased);
+       const [argumentList, transferables] = processArguments(rawArgumentList);
+-      return requestResponseMessage(ep, {
+-        type: 3,
+-        path: path.map((p) => p.toString()),
+-        argumentList
+-      }, transferables).then(fromWireValue);
+-    }
++      return requestResponseMessage(
++        ep,
++        {
++          type: 3,
++          path: path.map((p) => p.toString()),
++          argumentList,
++        },
++        transferables
++      ).then(fromWireValue);
++    },
+   });
+   return proxy2;
+ }
+@@ -240,7 +267,9 @@ function transfer(obj, transfers) {
+   return obj;
+ }
+ function proxy(obj, options) {
+-  return Object.assign(obj, { [proxyMarker]: options !== null && options !== void 0 ? options : true });
++  return Object.assign(obj, {
++    [proxyMarker]: options !== null && options !== void 0 ? options : true,
++  });
+ }
+ function toWireValue(value) {
+   for (const [name, handler] of transferHandlers) {
+@@ -250,18 +279,18 @@ function toWireValue(value) {
+         {
+           type: 3,
+           name,
+-          value: serializedValue
++          value: serializedValue,
+         },
+-        transferables
++        transferables,
+       ];
+     }
+   }
+   return [
+     {
+       type: 0,
+-      value
++      value,
+     },
+-    transferCache.get(value) || []
++    transferCache.get(value) || [],
+   ];
+ }
+ function fromWireValue(value) {
+@@ -289,7 +318,10 @@ function requestResponseMessage(ep, msg, transfers) {
+   });
+ }
+ function generateUUID() {
+-  return new Array(4).fill(0).map(() => Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16)).join("-");
++  return new Array(4)
++    .fill(0)
++    .map(() => Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16))
++    .join("-");
+ }
+ 
+ // src/util.ts
+@@ -299,7 +331,8 @@ function formatFileSystemTree(tree) {
+     const entry = tree[name];
+     if ("file" in entry) {
+       const contents = entry.file.contents;
+-      const stringContents = typeof contents === "string" ? contents : binaryString(contents);
++      const stringContents =
++        typeof contents === "string" ? contents : binaryString(contents);
+       const binary = typeof contents === "string" ? {} : { b: true };
+       newTree.d[name] = { f: { c: stringContents, ...binary } };
+       continue;
+@@ -344,22 +377,26 @@ var WebContainer = class {
+       stream = new ReadableStream({
+         start(controller) {
+           output = (item) => controller.enqueue(item);
+-        }
++        },
+       });
+     }
+     const wrapped = proxyListener(optionalBinaryListener(output));
+-    const process = await this._endpoint.run({
+-      command,
+-      args,
+-      env: options?.env,
+-      terminal: options?.terminal
+-    }, void 0, void 0, wrapped);
++    const process = await this._endpoint.run(
++      {
++        command,
++        args,
++        env: options?.env,
++        terminal: options?.terminal,
++      },
++      void 0,
++      void 0,
++      wrapped
++    );
+     return new WebContainerProcessImpl(process, stream);
+   }
+   on(event, listener) {
+     let tornDown = false;
+-    let unsubscribe = () => {
+-    };
++    let unsubscribe = () => {};
+     const wrapped = (...args) => {
+       if (tornDown) {
+         return;
+@@ -380,7 +417,7 @@ var WebContainer = class {
+   mount(tree, options) {
+     const payload = encoder.encode(JSON.stringify(formatFileSystemTree(tree)));
+     return this._endpoint.loadFiles(transfer(payload, [payload.buffer]), {
+-      mountPoints: options?.mountPoint
++      mountPoints: options?.mountPoint,
+     });
+   }
+   teardown() {
+@@ -388,6 +425,7 @@ var WebContainer = class {
+       throw new Error("WebContainer already torn down");
+     }
+     destroyed = true;
++    booted = false;
+     this.fs._teardown();
+     this._endpoint.teardown();
+     this._endpoint[releaseProxy]();
+@@ -401,8 +439,7 @@ var WebContainer = class {
+       throw new Error("WebContainer already booted");
+     }
+     const instancePromise = unsynchronizedBoot();
+-    bootPromise = instancePromise.catch(() => {
+-    });
++    bootPromise = instancePromise.catch(() => {});
+     try {
+       const instance = await instancePromise;
+       booted = true;
+@@ -432,9 +469,8 @@ var WebContainerProcessImpl = class {
+     this.output = output;
+     this.input = new WritableStream({
+       write: (data) => {
+-        this._process.write(data).catch(() => {
+-        });
+-      }
++        this._process.write(data).catch(() => {});
++      },
+     });
+   }
+   input;
+@@ -461,7 +497,10 @@ var FileSystemAPIClient = class {
+   }
+   async writeFile(path, data, options) {
+     if (data instanceof Uint8Array) {
+-      const buffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
++      const buffer = data.buffer.slice(
++        data.byteOffset,
++        data.byteOffset + data.byteLength
++      );
+       data = transfer(new Uint8Array(buffer), [buffer]);
+     }
+     await this._fs.writeFile(path, data, options);
+@@ -474,7 +513,9 @@ var FileSystemAPIClient = class {
+     if (isTypedArrayCollection(result)) {
+       return result;
+     }
+-    const entries = result.map((entry) => new DirEntImpl(entry.name, entry["Symbol(type)"]));
++    const entries = result.map(
++      (entry) => new DirEntImpl(entry.name, entry["Symbol(type)"])
++    );
+     return entries;
+   }
+   async mkdir(path, options) {
+@@ -489,7 +530,7 @@ async function unsynchronizedBoot() {
+   const constructorEndpoint = await endpointPromise;
+   const endpoint = await constructorEndpoint.build({
+     host: window.location.host,
+-    version: "1.0.0-alpha.3"
++    version: "1.0.0-alpha.3",
+   });
+   const fs = await endpoint.fs();
+   constructorEndpoint[releaseProxy]();
+@@ -547,6 +588,4 @@ function isTypedArrayCollection(list) {
+ function getIframeUrl() {
+   return new URL(window.WEBCONTAINER_API_IFRAME_URL ?? DEFAULT_IFRAME_SOURCE);
+ }
+-export {
+-  WebContainer
+-};
++export { WebContainer };

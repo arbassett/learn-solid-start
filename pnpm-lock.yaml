@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  '@webcontainer/api@1.0.0-alpha.3':
+    hash: 3biuddxppaluymuqmnf6knueae
+    path: patches/@webcontainer__api@1.0.0-alpha.3.patch
+
 specifiers:
   '@solidjs/meta': ^0.28.2
   '@solidjs/router': ^0.7.0
@@ -7,14 +12,21 @@ specifiers:
   '@typescript-eslint/parser': ^5.51.0
   '@unocss/preset-wind': ^0.49.4
   '@unocss/reset': ^0.49.4
+  '@webcontainer/api': 1.0.0-alpha.3
+  base64-js: ^1.5.1
   eslint: ^8.33.0
   eslint-plugin-import: ^2.27.5
   eslint-plugin-solid: ^0.9.4
+  monaco-editor: ^0.35.0
+  monaco-editor-textmate: ^4.0.0
+  monaco-textmate: ^3.0.1
+  onigasm: ^2.2.5
   prettier: ^2.8.3
   prettier-plugin-tailwindcss: ^0.2.2
   solid-js: ^1.6.10
   solid-start: ^0.2.20
   solid-start-node: ^0.2.20
+  solid-transition-group: ^0.0.13
   typescript: ^4.9.4
   undici: ^5.15.1
   unocss: ^0.49.4
@@ -25,10 +37,17 @@ dependencies:
   '@solidjs/router': 0.7.0_solid-js@1.6.10
   '@unocss/preset-wind': 0.49.4
   '@unocss/reset': 0.49.4
+  '@webcontainer/api': 1.0.0-alpha.3_3biuddxppaluymuqmnf6knueae
+  base64-js: 1.5.1
   eslint-plugin-solid: 0.9.4_4vsywjlpuriuw3tl5oq6zy5a64
+  monaco-editor: 0.35.0
+  monaco-editor-textmate: 4.0.0_mhdqfyxqtzezmffht4xk6nrtoa
+  monaco-textmate: 3.0.1_onigasm@2.2.5
+  onigasm: 2.2.5
   prettier-plugin-tailwindcss: 0.2.2_prettier@2.8.3
   solid-js: 1.6.10
   solid-start: 0.2.20_vkjva64sf73ktmwxznregy75uy
+  solid-transition-group: 0.0.13_solid-js@1.6.10
   undici: 5.18.0
   unocss: 0.49.4_vite@3.2.5
 
@@ -1710,6 +1729,11 @@ packages:
       - rollup
     dev: false
 
+  /@webcontainer/api/1.0.0-alpha.3_3biuddxppaluymuqmnf6knueae:
+    resolution: {integrity: sha512-MlKNDzIaM3IYLT1WRO5m0F8cggnb/CcSSZh6Bdv3rY/viP4y9uQNH+bGaF8p5Sfovp9FtEcqR/KuJ31JslTfQA==}
+    dev: false
+    patched: true
+
   /accepts/1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
@@ -1863,6 +1887,10 @@ packages:
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  /base64-js/1.5.1:
+    resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
+    dev: false
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -2870,6 +2898,10 @@ packages:
   /fast-levenshtein/2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
 
+  /fast-plist/0.1.3:
+    resolution: {integrity: sha512-d9cEfo/WcOezgPLAC/8t8wGb6YOD6JTCPMw2QcG2nAdFmyY+9rTUizCTaGjIZAloWENTEUMAPpkUAIJJJ0i96A==}
+    dev: false
+
   /fastq/1.15.0:
     resolution: {integrity: sha512-wBrocU2LCXXa+lWBt8RoIRD89Fi8OdABODa/kEnyeyjS5aZO5/GNvI5sEINADqP/h8M29UHTHUb53sUu5Ihqdw==}
     dependencies:
@@ -3492,6 +3524,29 @@ packages:
   /minimist/1.2.7:
     resolution: {integrity: sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==}
 
+  /monaco-editor-textmate/4.0.0_mhdqfyxqtzezmffht4xk6nrtoa:
+    resolution: {integrity: sha512-Clwup5LJzVfwURQrS+odSEC5/hZBEG36pQnvBKt4OtBndF8r2xLeXUZcK/AqEBK2u0Npy7frFp9hG7m66Ol9hA==}
+    peerDependencies:
+      monaco-editor: 0.x.x
+      monaco-textmate: ^3.0.0
+    dependencies:
+      monaco-editor: 0.35.0
+      monaco-textmate: 3.0.1_onigasm@2.2.5
+    dev: false
+
+  /monaco-editor/0.35.0:
+    resolution: {integrity: sha512-BJfkAZ0EJ7JgrgWzqjfBNP9hPSS8NlfECEDMEIIiozV2UaPq22yeuOjgbd3TwMh3anH0krWZirXZfn8KUSxiOA==}
+    dev: false
+
+  /monaco-textmate/3.0.1_onigasm@2.2.5:
+    resolution: {integrity: sha512-ZxxY3OsqUczYP1sGqo97tu+CJmMBwuSW+dL0WEBdDhOZ5G1zntw72hvBc68ZQAirosWvbDKgN1dL5k173QtFww==}
+    peerDependencies:
+      onigasm: ^2.0.0
+    dependencies:
+      fast-plist: 0.1.3
+      onigasm: 2.2.5
+    dev: false
+
   /mri/1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -3594,6 +3649,12 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       mimic-fn: 2.1.0
+    dev: false
+
+  /onigasm/2.2.5:
+    resolution: {integrity: sha512-F+th54mPc0l1lp1ZcFMyL/jTs2Tlq4SqIHKIXGZOR/VkHkF9A7Fr5rRr5+ZG/lWeRsyrClLYRq7s/yFQ/XhWCA==}
+    dependencies:
+      lru-cache: 5.1.1
     dev: false
 
   /open/8.4.0:
@@ -4066,6 +4127,14 @@ packages:
       wait-on: 6.0.1_debug@4.3.4
     transitivePeerDependencies:
       - supports-color
+
+  /solid-transition-group/0.0.13_solid-js@1.6.10:
+    resolution: {integrity: sha512-VA1V0ip4dsNOQJ/dCluCiAPBUuHspYFm4WYG91jpNmcP4rC4DY1S1EGds44JjiUAP7qEoEZdMhPaiS6lqTF7AA==}
+    peerDependencies:
+      solid-js: ^1.5.0
+    dependencies:
+      solid-js: 1.6.10
+    dev: false
 
   /source-map-js/1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}

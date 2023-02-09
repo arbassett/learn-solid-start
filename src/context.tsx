@@ -1,6 +1,7 @@
 import type { Accessor, ParentComponent } from 'solid-js';
 import { createEffect } from 'solid-js';
 import { createContext, createSignal, useContext } from 'solid-js';
+import { isServer } from 'solid-js/web';
 import { isDarkTheme } from '~/lib/utils/isDarkTheme';
 
 interface AppContextType {
@@ -12,9 +13,10 @@ const AppContext = createContext<AppContextType>();
 
 export const AppContextProvider: ParentComponent = (props) => {
   const [dark, setDark] = createSignal(isDarkTheme());
-  document.body.classList.toggle('dark', dark());
+  !isServer && document.body.classList.toggle('dark', dark());
 
   createEffect(() => {
+    
     document.body.classList.toggle('dark', dark());
     localStorage.setItem('dark', String(dark()));
   });
