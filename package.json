@@ -22,7 +22,7 @@
     "@webcontainer/api": "1.0.0-alpha.3",
     "base64-js": "^1.5.1",
     "eslint-plugin-solid": "^0.9.4",
-    "monaco-editor": "^0.35.0",
+    "monaco-editor": "~0.34.1",
     "monaco-editor-textmate": "^4.0.0",
     "monaco-textmate": "^3.0.1",
     "onigasm": "^2.2.5",
@@ -46,7 +46,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "@webcontainer/api@1.0.0-alpha.3": "patches/@webcontainer__api@1.0.0-alpha.3.patch"
+      "@webcontainer/api@1.0.0-alpha.3": "patches/@webcontainer__api@1.0.0-alpha.3.patch",
+      "monaco-editor@0.34.1": "patches/monaco-editor@0.34.1.patch"
     }
   }
 }

@@ -4,6 +4,9 @@ patchedDependencies:
   '@webcontainer/api@1.0.0-alpha.3':
     hash: 3biuddxppaluymuqmnf6knueae
     path: patches/@webcontainer__api@1.0.0-alpha.3.patch
+  monaco-editor@0.34.1:
+    hash: lzr3t4jw4bmspmaudzsxcdv2cy
+    path: patches/monaco-editor@0.34.1.patch
 
 specifiers:
   '@solid-primitives/media': ^2.0.6
@@ -19,7 +22,7 @@ specifiers:
   eslint: ^8.33.0
   eslint-plugin-import: ^2.27.5
   eslint-plugin-solid: ^0.9.4
-  monaco-editor: ^0.35.0
+  monaco-editor: ~0.34.1
   monaco-editor-textmate: ^4.0.0
   monaco-textmate: ^3.0.1
   onigasm: ^2.2.5
@@ -45,8 +48,8 @@ dependencies:
   '@webcontainer/api': 1.0.0-alpha.3_3biuddxppaluymuqmnf6knueae
   base64-js: 1.5.1
   eslint-plugin-solid: 0.9.4_4vsywjlpuriuw3tl5oq6zy5a64
-  monaco-editor: 0.35.0
-  monaco-editor-textmate: 4.0.0_mhdqfyxqtzezmffht4xk6nrtoa
+  monaco-editor: 0.34.1_lzr3t4jw4bmspmaudzsxcdv2cy
+  monaco-editor-textmate: 4.0.0_gty3z2xs6yh3j7xkzsbir7qbpe
   monaco-textmate: 3.0.1_onigasm@2.2.5
   onigasm: 2.2.5
   prettier-plugin-tailwindcss: 0.2.2_prettier@2.8.3
@@ -3702,19 +3705,20 @@ packages:
   /minimist/1.2.7:
     resolution: {integrity: sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==}
 
-  /monaco-editor-textmate/4.0.0_mhdqfyxqtzezmffht4xk6nrtoa:
+  /monaco-editor-textmate/4.0.0_gty3z2xs6yh3j7xkzsbir7qbpe:
     resolution: {integrity: sha512-Clwup5LJzVfwURQrS+odSEC5/hZBEG36pQnvBKt4OtBndF8r2xLeXUZcK/AqEBK2u0Npy7frFp9hG7m66Ol9hA==}
     peerDependencies:
       monaco-editor: 0.x.x
       monaco-textmate: ^3.0.0
     dependencies:
-      monaco-editor: 0.35.0
+      monaco-editor: 0.34.1_lzr3t4jw4bmspmaudzsxcdv2cy
       monaco-textmate: 3.0.1_onigasm@2.2.5
     dev: false
 
-  /monaco-editor/0.35.0:
-    resolution: {integrity: sha512-BJfkAZ0EJ7JgrgWzqjfBNP9hPSS8NlfECEDMEIIiozV2UaPq22yeuOjgbd3TwMh3anH0krWZirXZfn8KUSxiOA==}
+  /monaco-editor/0.34.1_lzr3t4jw4bmspmaudzsxcdv2cy:
+    resolution: {integrity: sha512-FKc80TyiMaruhJKKPz5SpJPIjL+dflGvz4CpuThaPMc94AyN7SeC9HQ8hrvaxX7EyHdJcUY5i4D0gNyJj1vSZQ==}
     dev: false
+    patched: true
 
   /monaco-textmate/3.0.1_onigasm@2.2.5:
     resolution: {integrity: sha512-ZxxY3OsqUczYP1sGqo97tu+CJmMBwuSW+dL0WEBdDhOZ5G1zntw72hvBc68ZQAirosWvbDKgN1dL5k173QtFww==}

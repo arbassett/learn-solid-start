@@ -16,7 +16,6 @@ export const AppContextProvider: ParentComponent = (props) => {
   !isServer && document.body.classList.toggle('dark', dark());
 
   createEffect(() => {
-    
     document.body.classList.toggle('dark', dark());
     localStorage.setItem('dark', String(dark()));
   });

@@ -7,12 +7,12 @@ export const isDarkTheme = () => {
       }
     }
 
-    const userMedia = window.matchMedia('(prefers-color-scheme: dark)');
+    const userMedia = window.matchMedia('(prefers-color-scheme: light)');
     if (userMedia.matches) {
-      return true;
+      return false;
     }
   }
 
-  // Default theme is light.
-  return false;
+  // Default theme is dark.
+  return true;
 };

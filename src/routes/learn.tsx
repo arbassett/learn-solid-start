@@ -9,8 +9,8 @@ const Home: VoidComponent = () => {
         <Title>Learn solid start</Title>
       </Head>
       <Header />
-      <main class="dark:bg-solid-darkbg grid h-full min-h-0 bg-white font-sans text-black dark:text-white wrapper dark" >
-        <Outlet />
+      <main class="dark:bg-solid-darkbg grid h-full min-h-0 bg-white font-sans text-black dark:text-white wrapper dark" >        
+          <Outlet />
       </main>
     </div>
   );

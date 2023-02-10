@@ -20,7 +20,7 @@ import { AppContextProvider } from "./context";
 
 export default function Root() {
   return (
-    <Html lang="en">
+    <Html lang="en" class="dark">
       <Head>
         <Title>Create JD App</Title>
         <Meta charset="utf-8" />

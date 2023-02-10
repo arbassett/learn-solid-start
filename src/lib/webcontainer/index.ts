@@ -2,7 +2,7 @@ import { WebContainer } from '@webcontainer/api';
 import { type FileSystemTree } from '@webcontainer/api';
 import { createSignal, onCleanup, onMount } from 'solid-js';
 
-type Props = { initalfileSystem: FileSystemTree };
+type Props = { initalfileSystem: Record<string, string> };
 
 interface Adapter {
   base: string;
@@ -16,6 +16,26 @@ type Status =
   | { status: 'ready'; vm: Adapter }
   | { status: 'error'; error: Error };
 
+  const pathsToTree = (paths: Record<string,string>) => Object.keys(paths).reduce<FileSystemTree>((acc, path) => {
+    const parts = path.split('/');
+    console.log('parts', parts);
+    let node = acc;
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      if (i === parts.length - 1) {
+        node[part] = {
+          file: {
+            contents: paths[path],
+          },
+        };
+      } else {
+        node[part] = node[part] || { directory: {} };
+        node = node[part].directory;
+      }
+    }
+    return acc;
+  }, {});
+
 export const createWebContainer = ({ initalfileSystem }: Props) => {
   const [state, setState] = createSignal<Status>({ status: 'loading', progress: 1/5, text: 'Loading WebContainer' });
   let vm: WebContainer;
@@ -24,18 +44,10 @@ export const createWebContainer = ({ initalfileSystem }: Props) => {
     vm = await WebContainer.boot();
 
     setState({ status: 'loading', progress: 2 / 5, text: 'Mounting file system' });
-    await vm.mount(initalfileSystem);
+    await vm.mount(pathsToTree(initalfileSystem));
 
     setState({ status: 'loading', progress: 3 / 5, text: 'Installing dependencies' });
     const process = await vm.spawn('turbo', ['install']);
-
-    process.output.pipeTo(
-      new WritableStream({
-        write(data) {
-          console.log(`[turbo install] ${data}`);
-        },
-      }),
-    );
 
     const exitCode = await process.exit;
 
@@ -59,14 +71,6 @@ export const createWebContainer = ({ initalfileSystem }: Props) => {
 	
 			const run_dev = async () => {
 				const process = await vm.spawn('turbo', ['run', 'dev']);
-
-				process.output.pipeTo(
-					new WritableStream({
-						write(data) {
-							console.log(`[dev] ${data}`);
-						},
-					}),
-				);
 				// keep restarting dev server if it crashes
 				process.exit.then((code) => {
 					if (code !== 0) {

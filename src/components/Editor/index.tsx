@@ -1,15 +1,20 @@
-import type { editor as mEditor} from 'monaco-editor';
-import type { Component} from "solid-js";
-import { createEffect} from "solid-js";
-import { onCleanup, onMount } from "solid-js";
+import { editor as mEditor, Uri } from 'monaco-editor';
+import type { Component } from 'solid-js';
+import { createEffect } from 'solid-js';
+import { onCleanup, onMount } from 'solid-js';
+import { liftOff } from './setup';
 
-export const Editor: Component = () => {
+interface Props {
+  url: string;
+}
+
+const Editor: Component<Props> = (props) => {
   let parent!: HTMLDivElement;
   let editor: mEditor.IStandaloneCodeEditor;
 
+  const model = () => mEditor.getModel(Uri.parse(props.url));
+
   onMount(async () => {
-    const liftOff = await (await import('./setupSolid')).liftOff;
-    const {editor: mEditor, Uri} = (await import('monaco-editor'));
     editor = mEditor.create(parent, {
       model: null,
       automaticLayout: true,
@@ -22,38 +27,19 @@ export const Editor: Component = () => {
         enabled: false,
       },
     });
-      mEditor.createModel(`
-import { Title } from "solid-start";
-import Counter from "~/components/Counter";
-      
-export default function Home() {
-  return (
-    <main>
-      <Title>Hello World</Title>
-      <h1>Hello world!</h1>
-      <Counter />
-      <p>
-      Visit{" "}
-      <a href="https://start.solidjs.com" target="_blank">
-        start.solidjs.com
-      </a>{" "}
-      to learn how to build SolidStart apps.
-      </p>
-    </main>
-  );
-}
-`, undefined, Uri.parse('file:///index.tsx'));
-      console.log('liftOff', liftOff)
-      await liftOff();
-      console.log('model', mEditor.getModel(Uri.parse('file:///index.tsx')));
-      editor.setModel(mEditor.getModel(Uri.parse('file:///index.tsx')));
 
-      mEditor.setTheme('vs-dark-plus');
+    editor.setModel(mEditor.getModel(Uri.parse('file:///index.tsx')));
+    mEditor.setTheme('vs-dark-plus');
   });
 
   onCleanup(() => editor?.dispose());
-  
 
+  createEffect(() => {
+    editor.setModel(model());
+    liftOff();
+  });
 
   return <div class="h-full min-h-0 p-0" ref={parent} />;
 };
+
+export default Editor;
