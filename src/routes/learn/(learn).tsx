@@ -1,9 +1,10 @@
 import type { FileSystemTree, WebContainer } from '@webcontainer/api';
+import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
 import onigasm from 'onigasm/lib/onigasm.wasm?url';
-import { Suspense, type VoidComponent, onMount, onCleanup, createSignal, lazy } from 'solid-js';
+import { Suspense, type VoidComponent, onMount, onCleanup, createSignal, lazy, createEffect, on, batch } from 'solid-js';
 import { A, Head, Title, Meta, Link, useRouteData, unstable_island, unstable_clientOnly } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
 import { createWebContainer } from '~/lib/webcontainer';
@@ -34,6 +35,8 @@ if (!isServer) {
   window.MonacoEnvironment = {
     getWorker(_moduleId: unknown, label: string) {
       switch (label) {
+        case 'json':
+					return new jsonWorker();
         case 'css':
           return new cssWorker();
         case 'typescript':
@@ -48,10 +51,30 @@ if (!isServer) {
 }
 
 const LearnPage: VoidComponent = () => {
-  const vm: WebContainer | null = null;
-
   const data = useRouteData<typeof routeData>();
   const state = createWebContainer({ initalfileSystem: data() });
+
+  const [files, setFiles] = createSignal<Record<string,string>>({});
+  const [selectedFile, setSelectedFile] = createSignal<string>('');
+
+  const updateFile = (path: string) => {
+    const idkHowToDoThisBetter = state();
+    if(!(idkHowToDoThisBetter.status === 'ready')) return;
+
+    idkHowToDoThisBetter.adapter.update({ [path]: files()[path]});
+  }
+
+  createEffect(() => {
+    if(data()) {
+      batch(() => {
+        setFiles(JSON.parse(JSON.stringify(data())));
+
+        setTimeout(() => {
+          setSelectedFile('file:///src/routes/index.tsx')
+        }, 500);
+      });
+    }
+  });
 
   const clampPercentage = (percentage: number, lowerBound: number, upperBound: number) => {
     return Math.min(Math.max(percentage, lowerBound), upperBound);
@@ -92,11 +115,11 @@ const LearnPage: VoidComponent = () => {
           '--right': `${2 - left()}fr`,
         }}
       >
-        <MonacoFiles files={data()} />
-        <Editor url="file:///src/routes/index.tsx" fallback={(<div />)} />
+        <MonacoFiles files={files()} />
+        <Editor url={selectedFile()} fallback={(<div />)} onDocChange={updateFile} />
         <GridResizer ref={resizer} isHorizontal={false} onResize={changeLeft} />
         <div class="relative">
-          <iframe src={state().vm?.base ?? ''} class="dark:bg-other block h-full w-full overflow-auto bg-white p-0" />
+          <iframe src={state().adapter?.base ?? ''} class="dark:bg-other block h-full w-full overflow-auto bg-white p-0" />
 
           <Transition
             onEnter={(el, done) => {

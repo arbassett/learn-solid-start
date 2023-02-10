@@ -6,6 +6,7 @@ import { liftOff } from './setup';
 
 interface Props {
   url: string;
+  onDocChange?: (path: string) => void;
 }
 
 const Editor: Component<Props> = (props) => {
@@ -28,13 +29,18 @@ const Editor: Component<Props> = (props) => {
       },
     });
 
-    editor.setModel(mEditor.getModel(Uri.parse('file:///index.tsx')));
     mEditor.setTheme('vs-dark-plus');
+
+    editor.onDidChangeModelContent(() => {
+      const path = editor.getModel()!.uri.path.slice(1);
+      props.onDocChange?.(path);
+    });
   });
 
   onCleanup(() => editor?.dispose());
 
   createEffect(() => {
+    console.log('model', model(), props.url);
     editor.setModel(model());
     liftOff();
   });
