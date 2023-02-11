@@ -1,0 +1,13 @@
+diff --git a/bin.cjs b/bin.cjs
+index 15535fa5aa965a657afb9e52ecdf6f6ce773a328..b2d136e47427129eb2962fa5f2fd4cb2e65633a1 100755
+--- a/bin.cjs
++++ b/bin.cjs
+@@ -307,7 +307,7 @@ prog
+               input: config.solidOptions.serverEntry,
+               external: ssrExternal,
+               output: {
+-                inlineDynamicImports: true,
++                inlineDynamicImports: false,
+                 format: "esm"
+               }
+             }

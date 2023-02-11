@@ -1,0 +1,40 @@
+diff --git a/index.js b/index.js
+index 02ca2db4e406805d6450c5ccb3336b3a7b44eba0..fae9db89a7858a04110983511a661f6381821207 100644
+--- a/index.js
++++ b/index.js
+@@ -121,13 +121,14 @@ const copyDependencies = async ({ entry, outputDir, includes, excludes, workingD
+  */
+ export default function ({ edge, prerender, includes, excludes } = {}) {
+   return {
+-    name: "vercel",
++    name: "vercel (Dae Patch)",
+     async start() {
+       const proc = await spawn("vercel", ["deploy", "--prebuilt"], {});
+       proc.stdout.pipe(process.stdout);
+       proc.stderr.pipe(process.stderr);
+     },
+     async build(config, builder) {
++      const ssrExternal = config?.ssr?.external || [];
+       // Vercel Build Output API v3 (https://vercel.com/docs/build-output-api/v3)
+       const __dirname = dirname(fileURLToPath(import.meta.url));
+       const workingDir =
+@@ -171,7 +172,8 @@ export default function ({ edge, prerender, includes, excludes } = {}) {
+             exportConditions: edge ? ["worker", "solid"] : ["node", "solid"]
+           }),
+           common({ strictRequires: true, ...config.build.commonjsOptions })
+-        ]
++        ],
++        external: ssrExternal
+       });
+ 
+       const renderFuncEntrypoint = new URL(`./index.${edge ? "mjs" : "cjs"}`, outputDir); // join(renderFuncDir, renderEntrypoint);
+@@ -251,7 +253,8 @@ export default function ({ edge, prerender, includes, excludes } = {}) {
+               exportConditions: edge ? ["worker", "solid"] : ["node", "solid"]
+             }),
+             common({ strictRequires: true, ...config.build.commonjsOptions })
+-          ]
++          ],
++          external: ssrExternal
+         });
+ 
+         const apiFuncEntrypoint = new URL(`./index.${edge ? "mjs" : "cjs"}`, outputDir); // join(apiFuncDir, apiEntrypoint);

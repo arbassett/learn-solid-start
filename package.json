@@ -41,13 +41,16 @@
     "prettier": "^2.8.3",
     "solid-devtools": "^0.24.7",
     "solid-start-node": "^0.2.20",
+    "solid-start-vercel": "^0.2.20",
     "typescript": "^4.9.4",
     "vite": "^3.2.5"
   },
   "pnpm": {
     "patchedDependencies": {
       "@webcontainer/api@1.0.0-alpha.3": "patches/@webcontainer__api@1.0.0-alpha.3.patch",
-      "monaco-editor@0.34.1": "patches/monaco-editor@0.34.1.patch"
+      "monaco-editor@0.34.1": "patches/monaco-editor@0.34.1.patch",
+      "solid-start-vercel@0.2.20": "patches/solid-start-vercel@0.2.20.patch",
+      "solid-start@0.2.20": "patches/solid-start@0.2.20.patch"
     }
   }
 }
