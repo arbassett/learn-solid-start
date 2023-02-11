@@ -10,7 +10,7 @@ export const Header: VoidComponent = () => {
         <img src={logo} alt="solid-js logo" class="w-8" />
       </A>
       <h1 class="leading-0 uppercase tracking-widest">
-          Learn <b>Solid Start</b>
+          Learn <b>Solid Start</b> (nearly mvp)
         </h1>
     </header>
   );
